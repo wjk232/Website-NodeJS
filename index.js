@@ -1,3 +1,4 @@
+require('dotenv').config()
 var app = require('express')();
 var crypto = require('crypto');
 var request = require('request');
@@ -14,8 +15,6 @@ key.setOptions({encryptionScheme: 'pkcs1'});
 var gPrivateKey = key.exportKey("pkcs8-private");
 var gPublicKey = key.exportKey("pkcs8-public-pem");
 var users_online = {}
-var env = require('node-env-file');
-env(__dirname + '/.env');
 var API_KEY = process.env.API_KEY || 'none';
 var mysql = require('mysql');
 var pool  = mysql.createPool({
@@ -24,6 +23,8 @@ var pool  = mysql.createPool({
   password : process.env.PASSWORD,
   database : process.env.DATABASE
 });
+
+console.log(process.env.HOST);
 
 io.on('connection', function(socket){
     
