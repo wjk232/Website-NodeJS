@@ -1,0 +1,43 @@
+html, body {
+    background-color: #fff;
+    color: #636b6f;
+    font-family: 'Raleway', sans-serif;
+    /*background: rgba(54, 25, 25, 0.0);
+    background-image: url("https://raw.githubusercontent.com/wjk232/Projects-Assignments/master/blue.jpg");*/
+}
+
+/* navbar */
+.navbar-default {
+    background-color: #ffffff;
+    border-color: #ffffff;
+}
+.navbar-default a:hover {
+    border-color: #000000;
+    color: #999999 !important; 
+}
+
+.profile_header{
+   padding-top:100px;
+   color: #fff;
+   background-color: #636b6f;
+}
+
+.profile{
+	text-align: center;
+}
+
+/* Change carousel buttons */
+.carousel .carousel-control {
+   background:#636b6f;
+}
+/* Since positioning the image, we need to help out the caption */
+.carousel-caption {
+  z-index: 10;
+}
+
+/* Declare heights because of positioning of img element */
+.carousel .item {
+  height: 400px;
+  background-color: #636b6f;
+}
+
