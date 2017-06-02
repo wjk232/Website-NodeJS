@@ -24,8 +24,6 @@ var pool  = mysql.createPool({
   database : process.env.DATABASE
 });
 
-console.log(process.env.HOST);
-
 io.on('connection', function(socket){
     
     socket.on('status', function(username){
@@ -117,15 +115,15 @@ app.use(function(request, response, next) {
                         if(user_token == result[0].api_token){
                             next();
                         }else{
-                            response.json({message : "Token not valid: Login again", code : 500});
+                            response.json({message : "Token not valid: Login again", code : 400});
                             response.end();
                         }
                     }else{
-                        response.json({message : "Username doesnt exist", code : 500});
+                        response.json({message : "Username doesnt exist", code : 404});
                         response.end();
                     }
                 }else{
-                    response.json({message : "User not authorize", code : 500});
+                    response.json({message : "User not authorize", code : 401});
                     response.end();
                 }
             });
@@ -175,7 +173,7 @@ app.get('/api/logout', function(request, response){
                 response.json({message : "Logout successfully", code : 200});
                 response.end();
             }else{
-                response.json({message : "Logout failed", code : 500});
+                response.json({message : "Logout failed", code : 400});
                 response.end();
             }        
         });
@@ -186,12 +184,8 @@ app.post('/api/login', function(request, response){
     var password = key.decrypt(request.body.password,"utf8");
     var username = key.decrypt(request.body.username,"utf8");
     var client_id = request.body.client_id;
-    //console.log(username);
-    //console.log(buffer);
-    //var buffer = new Buffer(message);
-    //var decrypted = crypto.privateDecrypt( gPrivateKey, buffer );
-    //var message = decrypted.toString("utf8");
-   pool.getConnection(function (err, connection){
+    
+    pool.getConnection(function (err, connection){
         if(err) {
             connection.release();
             response.json({message : err, code : 500});
@@ -213,18 +207,18 @@ app.post('/api/login', function(request, response){
                         response.end(); 
                     }else{
                         connection.release();
-                        response.json({message : "Wrong Password", code : 500});
+                        response.json({message : "Wrong Password", code : 401});
                         response.end()
                     }
                 }else{
                     connection.release();
-                    response.json({message : "Username doesnt exist", code : 500});
+                    response.json({message : "Username doesnt exist", code : 404});
                     response.end();
                 }
             }else{
                 connection.release();
                 console.log('Error while performing Query.');
-                response.json({message : "Something went wrong", code : 500});
+                response.json({message : "Something went wrong", code : 400});
                 response.end();
             }
         });
@@ -246,7 +240,7 @@ app.post('/api/register', function(request, response){
             if (!err){
                 if(result.length > 0){
                     connection.release();
-                    response.json({message : "Username already exist", code : 500});
+                    response.json({message : "Username already exist", code : 404});
                     response.end();
                 }else{
                     connection.query('INSERT INTO users (status, username, password, api_token, client_id, profile_pic, location) VALUES(?,?,?,?,?,?,?)',
@@ -262,7 +256,7 @@ app.post('/api/register', function(request, response){
                                     response.end();  
                                 }else{
                                     connection.release();
-                                    response.json({message : "Something went wrong", code : 500});
+                                    response.json({message : "Something went wrong", code : 400});
                                     response.end();
                                 }
                             });                                    
@@ -275,7 +269,7 @@ app.post('/api/register', function(request, response){
             }else{
                 connection.release();
                 console.log('Error while performing Query.');
-                response.json({message : "Something went wrong", code : 500});
+                response.json({message : "Something went wrong", code : 400});
                 response.end();
             }
         });
@@ -306,25 +300,25 @@ app.route('/api/users')
                                         response.end();
                                     }else{
                                         connection.release();
-                                        response.json({message : "Something went wrong", code : 500});
+                                        response.json({message : "Something went wrong", code : 400});
                                         response.end();
                                     }
                                 });
                             }else{
                                 connection.release();
-                                response.json({message : "User update failed", code : 500});
+                                response.json({message : "User update failed", code : 400});
                                 response.end();
                             }
                         });
                     }else{
                         connection.release();
-                        response.json({message : "Username doesnt exist", code : 500});
+                        response.json({message : "Username doesnt exist", code : 404});
                         response.end();
                     }
                 }else{
                     connection.release();
                     console.log("Error while performing Query.");
-                    response.json({message : "Something went wrong", code : 500});
+                    response.json({message : "Something went wrong", code : 400});
                     response.end();
                 }
             });
@@ -344,15 +338,15 @@ app.route('/api/users')
                 connection.release();
                 if(!err){
                     if(result.length > 0){
-                        response.json(result[0]);
+                        response.json({message : "User found", content: result[0], code : 200});
                         response.end();
                     }else{
-                        response.json({message : "Username doesnt exist", code : 500});
+                        response.json({message : "Username doesnt exist" , code : 404});
                         response.end();
                     }
                 }else{
                     console.log("Error while performing Query.");
-                    response.json({message : "Something went wrong", code : 500});
+                    response.json({message : "Something went wrong", code : 400});
                     response.end();    
                 }
             });
@@ -371,15 +365,15 @@ app.get('/api/recentusers', function (request, response){
             connection.release();
             if(!err){
                 if(result.length > 0){
-                    response.json(result);
+                    response.json({message : "Users found", content: result, code : 200});
                     response.end();
                 }else{
-                    response.json({message : "No users subscribed", code : 500});
+                    response.json({message : "No users subscribed", code : 404});
                     response.end();
                 }
             }else{
                 console.log("Error while performing Query.");
-                response.json({message : "Something went wrong", code : 500});
+                response.json({message : "Something went wrong", code : 400});
                 response.end();    
             }
         });
@@ -412,7 +406,7 @@ app.post('/api/upload', function (request, response) {
                 response.end();              
             });
         }catch (e){    
-            response.json({message : "Error: Something happen", code : 400});
+            response.json({message : "Error: Something happen", code : 500});
             response.end(); 
         }
             
@@ -423,7 +417,7 @@ app.get('/api/download', function(request, response){
     var usernameFrom = key.decrypt(request.headers.usernamefrom ,"utf8");
     var filename = key.decrypt(request.headers.filename,"utf8");
     var username = decodeURIComponent(request.query.username);
-    console.log("Here in download" + " " + usernameFrom + "   " + filename);
+    console.log("Downloading: " + " " + usernameFrom + "   " + filename);
     
     //usernameTo = key.decrypt(value,"utf8");
     var file = __dirname + "/public/download/" + username + "/" + usernameFrom + "/" + filename;
