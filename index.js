@@ -17,6 +17,7 @@ var gPublicKey = key.exportKey("pkcs8-public-pem");
 var users_online = {}
 var API_KEY = process.env.API_KEY || 'none';
 var mysql = require('mysql');
+
 var pool  = mysql.createPool({
   host     : process.env.HOST,
   user     : process.env.USER,

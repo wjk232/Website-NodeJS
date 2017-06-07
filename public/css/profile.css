@@ -19,7 +19,14 @@ html, body {
 .profile_header{
    padding-top:100px;
    color: #fff;
-   background-color: #636b6f;
+   background-image: url("/images/Buildings.png");
+   /*background-color: #636b6f;*/
+}
+
+@media (max-width: 768px) {
+  .profile_header {
+    background-image: url("/images/nn22.jpg");
+  }
 }
 
 .profile{
@@ -28,7 +35,8 @@ html, body {
 
 /* Change carousel buttons */
 .carousel .carousel-control {
-   background:#636b6f;
+  background: rgba(0,0,0,0);
+  
 }
 /* Since positioning the image, we need to help out the caption */
 .carousel-caption {
@@ -37,7 +45,95 @@ html, body {
 
 /* Declare heights because of positioning of img element */
 .carousel .item {
+  background: rgba(0,0,0,0);  
   height: 400px;
-  background-color: #636b6f;
 }
 
+
+
+
+.container-fluid{
+   margin-top:20px;
+   background:#990000;
+   max-width:520px;
+   border: 1px solid #000;  
+}
+
+.chat-messages {
+   margin: 0px 0px 0px 0px;
+   background:#FFF;
+   border: 1px solid #000; 
+   height: 350px;
+   max-width:520px;
+   overflow-y: scroll;
+   overflow-x:hidden;
+}
+
+@media screen and (min-width: 800px) {
+   .chat-messages{
+      height: 400px;
+   }
+}
+
+.chat-textbox{
+   padding: 10px 0px 5px 0px;
+   max-width:520px; 
+}
+
+.button {
+   height:48px;
+   width:80px; 
+}
+
+.bubble {
+   white-space: -moz-pre-wrap; 
+   white-space: -pre-wrap; 
+   white-space: -o-pre-wrap; 
+   word-wrap: break-word;
+   background:#e8e8e8;
+   display: inline-block;
+   padding:10px;
+   margin:20px;
+   position:relative;
+   width:auto;
+   min-width: 10px; /* Overrides max-width */
+   border-radius:5px;
+   border-color:#000;
+   max-width:200px;
+}
+
+.input-group{
+   margin: 0px 10px 5px 10px;
+}
+.input-group textarea{
+	resize: none;
+	border-color:#eeeeee;
+}
+
+/* Login Page */
+ 
+.login {
+  border: 1px solid #000; 
+  height: 400px;
+  background-color: #fff;
+}
+ 
+.login .formL {
+  height: 100px;
+  margin-top: 100px;
+  text-align: center;
+  width: 100%;
+}
+ 
+.login .formL .userInput {
+  background-color: transparent;
+  border: none;
+  outline: none;
+  border-bottom: 2px solid #990000;
+  padding-bottom: 15px;
+  margin-bottom:20px;
+  text-align: center;
+  width:90%;
+  font-size: 150%;
+  letter-spacing: 3px;
+}
