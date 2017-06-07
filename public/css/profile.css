@@ -55,6 +55,7 @@ html, body {
 .container-fluid{
    margin-top:20px;
    background:#990000;
+   width:90%;
    max-width:520px;
    border: 1px solid #000;  
 }
