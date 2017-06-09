@@ -43,14 +43,14 @@
         <div class="container">
             <div class="row profile_header " >
                 <!-- Profile picture-->
-                <div class="col-sm-5 col-md-4 " align="middle" >
+                <div class="col-sm-5 col-md-4 " align="center" >
                     <img width="300" height="300" class="img-circle" src="/images/yo.jpg">
                     <h1>Rogelio Espinoza</h1>
                     <h2>Software Engineer</h2>
                 </div>
                 <!-- Carousel-->
                 <div id="myCarousel" class="carousel slide col-sm-7 col-md-8" data-ride="carousel">
-                    <h1 align="middle">My Work</h1>
+                    <h1 align="center">My Work</h1>
                     <!-- Indicators -->
                     <ol class="carousel-indicators">
                         <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
@@ -63,7 +63,7 @@
                         <div class="item active">
                             <div class="container">
                                 <div class="carousel-caption">
-                                    <img class="img-circle"  src="/images/chatogo.png" align="middle">
+                                    <img class="img-circle"  src="/images/chatogo.png" align="center">
                                     <h1>ChatoGo</h1>
                                     <p>Android App/Own Project</p>
                                     <p><a class="btn btn-lg btn-primary" href="https://play.google.com/store/apps/details?id=com.cyr.chatogo&hl=en" role="button">Check it out</a></p>
@@ -73,7 +73,7 @@
                         <div class="item">
                             <div class="container">
                                 <div class="carousel-caption">
-                                    <img class="img-circle"  src="/images/jumpingtherope.png" align="middle">
+                                    <img class="img-circle"  src="/images/jumpingtherope.png" align="center">
                                     <h1>Jumping The Rope</h1>
                                     <p>Android Game/Own Project</p>
                                     <p><a class="btn btn-lg btn-primary" href="https://play.google.com/store/apps/details?id=com.ryc.jumpingtheropegame&hl=en" role="button">Check it out</a></p>
@@ -83,7 +83,7 @@
                         <div class="item">
                             <div class="container">
                             <div class="carousel-caption">
-                                <img class="img-circle" src="/images/shootingplates.png" align="middle">
+                                <img class="img-circle" src="/images/shootingplates.png" align="center">
                                 <h1>Shooting Plates</h1>
                                 <p>Android Game/Own Project</p>
                                 <p><a class="btn btn-lg btn-primary" href="https://play.google.com/store/apps/details?id=com.RogeryCecy.Fps&hl=en" role="button">Check it out</a></p>
@@ -93,7 +93,7 @@
                         <div class="item">
                             <div class="container">
                                 <div class="carousel-caption">
-                                    <img class="img-circle"  src="/images/rycracing.png" align="middle">
+                                    <img class="img-circle"  src="/images/rycracing.png" align="center">
                                     <h1>RYC Racing</h1>
                                     <p>Android Game/Own Project</p>
                                     <p><a class="btn btn-lg btn-primary" href="https://play.google.com/store/apps/details?id=com.rycracing.ryc&hl=en" role="button">Check it out</a></p>
@@ -103,7 +103,7 @@
                         <div class="item">
                             <div class="container">
                                 <div class="carousel-caption">
-                                    <img class="img-circle"  src="/images/lockerapp.png" align="middle">
+                                    <img class="img-circle"  src="/images/lockerapp.png" align="center">
                                     <h1>Locker App</h1>
                                     <p>Android App/Team Project</p>
                                     <p><a class="btn btn-lg btn-primary" href="https://play.google.com/store/apps/details?id=com.archangel.locker&hl=en" role="button">Check it out</a></p>
@@ -163,7 +163,7 @@
                             <form id="formL" class="formL" action="">
                                 <input type="text" id="username" name="username" class="userInput" placeholder="Username"  required>
                                 <input type="text" id="location" name="location" class="userInput" placeholder="Location: San Antonio Tx" required>
-                                <input type="submit" value="Submit" style="display:none" >
+					            <input type="submit" value="Submit" class="btn btn-success " >
                             </form>
                         </div>            
                         <div id="showMessages"  class="chat-messages col-sm-12 col-md-12" style="display:none" >
@@ -172,7 +172,7 @@
                     </div>
                     <div class="row" >
                         <!--- Form to send messages using ajax for not reloading page--->
-                        <div id="chat-textbox" class="chat-textbox" style="display:none" align="middle" style="background:#D3D3D3">
+                        <div id="chat-textbox" class="chat-textbox" style="display:none" align="center" style="background:#D3D3D3">
                             <form id="formM" action="" >
                                 <div class="input-group ">
                                 <textarea id="msg" placeholder="Type message...." class="form-control input-sm" maxlength="160" wrap="hard" type="text" rows="2" name="firstname"></textarea>
@@ -198,6 +198,7 @@
 
         $(document).ready(function(){
             var username;
+            var location_input;
             var location;  
             var func;            
     
@@ -214,31 +215,76 @@
                     $('#msg').val(""); 
                     objDiv.scrollTop = objDiv.scrollHeight;
                 });
-                /*socket.on(location, function(msg){
+                socket.on(location, function(msg){
                     $("#showMessages").append('<div id="message" >'+msg.username+'<div id="message" class="bubble">'+msg.message+'</div></div><br>');                   
                     objDiv.scrollTop = objDiv.scrollHeight;
                 });
                 socket.on(location, function(msg){
                     $("#showMessages").append('<div id="message" >'+msg.username+'<div id="message" class="bubble">'+msg.message+'</div></div><br>');                   
                     objDiv.scrollTop = objDiv.scrollHeight;
-                });*/
+                });
             }
             
             $("#formL").submit(function(e){
                 e.preventDefault();
-                username = "Guest-" + $('#username').val();
-                location = $('#location').val();
+
+                username = "Guest-" + $('#username').val().charAt(0).toUpperCase() + $('#username').val().slice(1);
+                location_input = $('#location').val();
                 
                 document.getElementById("username").value = "";
                 document.getElementById("location").value = "";
                 
                 $( "#login" ).slideUp( 600 );
-                $( "#showMessages" ).delay( 800 ).slideDown( 400 );
-                $( "#chat-textbox" ).delay( 800 ).slideDown( 400 );
-                $("html, body").animate({ scrollTop: $(document).height()-$(window).height() },1000);
-                func();
+                httpGet();
+                
             });
-             
+            
+            function httpGet()
+            {
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() {
+                    if (this.readyState == 4 && this.status == 200) {
+                        var results = JSON.parse(this.responseText).results[0].address_components;
+                        location = setAddress(results);
+                        func();
+                        $( "#showMessages" ).delay( 800 ).slideDown( 400 );
+                        $( "#chat-textbox" ).delay( 800 ).slideDown( 400 );
+                    }
+                    if(this.readyState == 4 && this.status != 200){
+                        $( "#login" ).slideDown( 600 );
+                    }                    
+                };
+                xhttp.open("GET", "https://maps.googleapis.com/maps/api/geocode/json?address=" + parseInputLocation() + "&key=AIzaSyA3Oan0nAtLzyhKg-c3VvNhyDNjH16miA0", true);
+                xhttp.send();
+            }
+            
+            function parseInputLocation(){
+                var i;
+                var location = '';
+                var tmp_location = location_input.split(' ');
+                
+                for(i = 0; i < tmp_location.length; i++){
+                    location += tmp_location[i] + '%20';
+                }
+                return location;
+            }
+            
+            function setAddress(results){
+                var i;
+                var tmp_location = '';
+                for(i = 0; i < results.length; i++) {
+                    if(results[i].types[0] == 'locality'){
+                        tmp_location += results[i].long_name + ',';
+                    }
+                    if(results[i].types[0] == 'administrative_area_level_1'){
+                        tmp_location += results[i].long_name + ' ';   
+                    }
+                    if(results[i].types[0] == 'country'){
+                        tmp_location += results[i].short_name; 
+                    }
+                }
+                return tmp_location;
+            }
         });
         </script>
     </body>
