@@ -209,8 +209,10 @@
                 socket.emit('status', username);
                 $('#formM').submit(function(e){
                     e.preventDefault();
+
                     var msg = {username : username, message : $('#msg').val(), location : location};
-                    socket.emit('server', msg);
+                    socket.emit('nearme', msg);
+                    socket.emit('region', msg);
                     $("#showMessages").append('<div id="message" align="right"><div id="message" class="bubble">'+$('#msg').val()+'</div>'+username+'</div><br>');
                     $('#msg').val(""); 
                     objDiv.scrollTop = objDiv.scrollHeight;
@@ -219,7 +221,8 @@
                     $("#showMessages").append('<div id="message" >'+msg.username+'<div id="message" class="bubble">'+msg.message+'</div></div><br>');                   
                     objDiv.scrollTop = objDiv.scrollHeight;
                 });
-                socket.on(location, function(msg){
+                
+                socket.on(location.substring(location.indexOf(",") + 1), function(msg){
                     $("#showMessages").append('<div id="message" >'+msg.username+'<div id="message" class="bubble">'+msg.message+'</div></div><br>');                   
                     objDiv.scrollTop = objDiv.scrollHeight;
                 });
