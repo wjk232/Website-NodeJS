@@ -64,16 +64,10 @@ html, body {
    margin: 0px 0px 0px 0px;
    background:#FFF;
    border: 1px solid #000; 
-   height: 350px;
+   height: 300px;
    max-width:520px;
    overflow-y: scroll;
    overflow-x:hidden;
-}
-
-@media screen and (min-width: 800px) {
-   .chat-messages{
-      height: 400px;
-   }
 }
 
 .chat-textbox{
@@ -115,7 +109,7 @@ html, body {
  
 .login {
   border: 1px solid #000; 
-  height: 400px;
+  height: 300px;
   background-color: #fff;
 }
  
@@ -137,4 +131,13 @@ html, body {
   width:90%;
   font-size: 150%;
   letter-spacing: 3px;
+}
+
+@media screen and (min-width: 800px) {
+    .chat-messages{
+        height: 400px;
+    }
+   .login {
+        height: 400px;
+    }
 }
