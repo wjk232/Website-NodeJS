@@ -49,9 +49,6 @@ html, body {
   height: 400px;
 }
 
-
-
-
 .container-fluid{
    margin-top:20px;
    background:#990000;
@@ -60,6 +57,9 @@ html, body {
    border: 1px solid #000;  
 }
 
+.chatogo{
+    height:510px;
+}
 .chat-messages {
    margin: 0px 0px 0px 0px;
    background:#FFF;
@@ -139,5 +139,8 @@ html, body {
     }
    .login {
         height: 400px;
+    }
+    .chatogo {
+        height: 610px;
     }
 }

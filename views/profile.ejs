@@ -154,10 +154,14 @@
                 </div>
              
             </div>
-            <div class="row" style="height:580px" >
+            <div class="row chatogo">
                 <div class="container-fluid">
                     <img width="72" height="72" style="display:block; margin:auto;" src="images/ChatoGo-icon.png">
                     <!-- Chat window for messages and Login-->
+                    <ul id="tabs" class="nav nav-tabs" style="display:none">
+                        <li style="width:50%" class="active"><a  data-toggle="tab" href="#showMessagesNearme" style="color:#000">NEARME</a></li>
+                        <li style="width:50%"><a data-toggle="tab" href="#showMessagesRegion" style="color:#000">REGION</a></li>
+                    </ul>
                     <div class="row" >         
                         <div id="login" class="login">
                             <form id="formL" class="formL" action="">
@@ -165,9 +169,14 @@
                                 <input type="text" id="location" name="location" class="userInput" placeholder="Location: San Antonio Tx" required>
 					            <input type="submit" value="Submit" class="btn btn-success " >
                             </form>
-                        </div>            
-                        <div id="showMessages"  class="chat-messages col-sm-12 col-md-12" style="display:none" >
-                            <!--- Append messages-->
+                        </div>    
+                        <div id="tab-content" class="tab-content" style="display:none" >
+                            <div id="showMessagesNearme"  class="tab-pane active chat-messages col-sm-12 col-md-12" >
+                                <!--- Append messages-->
+                            </div>
+                            <div id="showMessagesRegion"  class="tab-pane chat-messages col-sm-12 col-md-12" >
+                                <!--- Append messages-->
+                            </div>
                         </div>
                     </div>
                     <div class="row" >
@@ -186,8 +195,7 @@
                 </div>
             </div>
         </div><!-- /container -->
-       
-      
+        
         <!-- Bootstrap core JavaScript
         ================================================== -->
         <!-- Placed at the end of the document so the pages load faster -->
@@ -204,27 +212,35 @@
     
             func = function () {
                 var socket = io();
-                var objDiv = document.getElementById("showMessages");
-                
+                var objDivNearme = document.getElementById("showMessagesNearme");
+                var objDivRegion = document.getElementById("showMessagesRegion");
+
                 socket.emit('status', username);
                 $('#formM').submit(function(e){
                     e.preventDefault();
-
+                    
                     var msg = {username : username, message : $('#msg').val(), location : location};
-                    socket.emit('nearme', msg);
-                    socket.emit('region', msg);
-                    $("#showMessages").append('<div id="message" align="right"><div id="message" class="bubble">'+$('#msg').val()+'</div>'+username+'</div><br>');
+                    if ( $('.nav-tabs .active').text() == "NEARME" ) {
+                        socket.emit('nearme', msg);
+                        $("#showMessagesNearme").append('<div id="message" align="right"><div id="message" class="bubble">'+$('#msg').val()+'</div>'+username+'</div><br>');
+                        objDivNearme.scrollTop = objDivNearme.scrollHeight;
+                    }else{
+                        socket.emit('region', msg);
+                        $("#showMessagesRegion").append('<div id="message" align="right"><div id="message" class="bubble">'+$('#msg').val()+'</div>'+username+'</div><br>');
+                        objDivRegion.scrollTop = objDivRegion.scrollHeight;
+                    }
+                    
                     $('#msg').val(""); 
-                    objDiv.scrollTop = objDiv.scrollHeight;
                 });
+                
                 socket.on(location, function(msg){
-                    $("#showMessages").append('<div id="message" >'+msg.username+'<div id="message" class="bubble">'+msg.message+'</div></div><br>');                   
-                    objDiv.scrollTop = objDiv.scrollHeight;
+                    $("#showMessagesNearme").append('<div id="message" >'+msg.username+'<div id="message" class="bubble">'+msg.message+'</div></div><br>');                   
+                    objDivNearme.scrollTop = objDivNearme.scrollHeight;
                 });
                 
                 socket.on(location.substring(location.indexOf(",") + 1), function(msg){
-                    $("#showMessages").append('<div id="message" >'+msg.username+'<div id="message" class="bubble">'+msg.message+'</div></div><br>');                   
-                    objDiv.scrollTop = objDiv.scrollHeight;
+                    $("#showMessagesRegion").append('<div id="message" >'+msg.username+'<div id="message" class="bubble">'+msg.message+'</div></div><br>');                   
+                    objDivRegion.scrollTop = objDivRegion.scrollHeight;
                 });
             }
             
@@ -250,8 +266,9 @@
                         var results = JSON.parse(this.responseText).results[0].address_components;
                         location = setAddress(results);
                         func();
-                        $( "#showMessages" ).delay( 800 ).slideDown( 400 );
+                        $( "#tab-content" ).delay( 800 ).slideDown( 400 );
                         $( "#chat-textbox" ).delay( 800 ).slideDown( 400 );
+                        $( "#tabs" ).delay( 800 ).fadeIn( 400 );
                     }
                     if(this.readyState == 4 && this.status != 200){
                         $( "#login" ).slideDown( 600 );
