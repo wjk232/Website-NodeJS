@@ -5,9 +5,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,height=device-height, initial-scale=1">
 
-    <!-- CSRF Token -->
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-
 	<title>My Website</title>
 
     <!-- Latest compiled and minified CSS -->
@@ -33,8 +30,7 @@
                 <div class="collapse navbar-collapse" id="app-navbar-collapse"> 
                     <!-- Right Side Of Navbar --> 
                     <ul class="nav navbar-nav navbar-right"> 
-                        <li><a href="/#">About</a></li> 
-                        <li><a href="/resume">Resume</a></li> 
+                        <li><a href="/resume" target="_blank">Resume</a></li> 
                     </ul> 
                 </div>
             </div>
@@ -122,9 +118,9 @@
                     </a>
                 </div><!-- /.carousel -->
             </div>
-            <div class="row" align='left'>
-                <div class="col-sm-6 col-md-6">
-                    <h2>About Me</h2>
+            <div class="row" align="center" >
+                <div class="col-sm-7 col-md-7" align="left">
+                    <h1 style="border-bottom:1px solid black">About Me</h1>
                     <p>
                     My name is Rogelio Espinoza. I am a 2016 UTSA graduate. I have always been fascinated with the way technology works.
                     Since I was young I have worked with fixing computers, phones, and other gadgets. That is the reason why I pursued a bachelor in computer science.
@@ -136,6 +132,11 @@
                     My motto is that “Success is no accident. It is hard work, perseverance, learning, studying, sacrifice, and most of all, love of what you are doing or learning to do.”-Pele.  
                     </p>
                     <br>
+                    <a href="https://github.com/wjk232" align="center" style="margin-right:20px;float:left;" target="_blank">
+                        <img width="80" height="80" src="/images/GitHub-Mark.png"><br>GitHub</a>
+                    <a href="https://www.linkedin.com/in/rogelio-espinoza-80684a120" align="center" style="float:left;" target="_blank">
+                        <img width="80" height="80" src="/images/LinkedIn.png" ><br>LinkedIn</a> 
+                    <br><br><br><br><br>                    
                     <!--<h2>Education</h2>
                     <b>The University of Texas at San Antonio</b>
                     <p>· B.S. in Computer Science</p>
@@ -151,21 +152,19 @@
                     <p>· Windows(7, 8, 10), Linux, Unix</p>
                     <b>Professional</b>
                     <p>· Strong motivational skills, Passionate about computers, Good analytical & logical thinking, Hardworking</p>-->
-                </div>
-             
-            </div>
-            <div class="row chatogo">
-                <div class="container-fluid">
+                </div> 
+                <div class="chatogo col-sm-5 col-md-5" >
                     <img width="72" height="72" style="display:block; margin:auto;" src="images/ChatoGo-icon.png">
-                    <!-- Chat window for messages and Login-->
+                    <!-- Chat Tabs-->
                     <ul id="tabs" class="nav nav-tabs" style="display:none">
                         <li style="width:50%" class="active"><a  data-toggle="tab" href="#showMessagesNearme" style="color:#000">NEARME</a></li>
                         <li style="width:50%"><a data-toggle="tab" href="#showMessagesRegion" style="color:#000">REGION</a></li>
                     </ul>
+                    <!-- Chat window for Messages and Login-->
                     <div class="row" >         
                         <div id="login" class="login">
-                            <form id="formL" class="formL" action="">
-                                <input type="text" id="username" name="username" class="userInput" placeholder="Username"  required>
+                            <form id="loginForm" class="loginForm" action="">
+                                <input type="text" id="username" name="username" class="userInput" placeholder="Username" maxlength="20" required>
                                 <input type="text" id="location" name="location" class="userInput" placeholder="Location: San Antonio Tx" required>
 					            <input type="submit" value="Submit" class="btn btn-success " >
                             </form>
@@ -182,9 +181,9 @@
                     <div class="row" >
                         <!--- Form to send messages using ajax for not reloading page--->
                         <div id="chat-textbox" class="chat-textbox" style="display:none" align="center" style="background:#D3D3D3">
-                            <form id="formM" action="" >
+                            <form id="messageForm" action="" >
                                 <div class="input-group ">
-                                <textarea id="msg" placeholder="Type message...." class="form-control input-sm" maxlength="160" wrap="hard" type="text" rows="2" name="firstname"></textarea>
+                                <textarea id="msg" placeholder="Type message...." class="form-control input-sm" wrap="hard" type="text" rows="2" name="firstname"></textarea>
                                 <span class="input-group-btn" >
                                 <input class="btn btn-success button" type="submit" value="Submit">
                                 </span>
@@ -195,7 +194,7 @@
                 </div>
             </div>
         </div><!-- /container -->
-        
+
         <!-- Bootstrap core JavaScript
         ================================================== -->
         <!-- Placed at the end of the document so the pages load faster -->
@@ -208,25 +207,24 @@
             var username;
             var location_input;
             var location;  
-            var func;            
     
-            func = function () {
+            function setupSocketIO() {
                 var socket = io();
                 var objDivNearme = document.getElementById("showMessagesNearme");
                 var objDivRegion = document.getElementById("showMessagesRegion");
 
                 socket.emit('status', username);
-                $('#formM').submit(function(e){
+                $('#messageForm').submit(function(e){
                     e.preventDefault();
                     
                     var msg = {username : username, message : $('#msg').val(), location : location};
                     if ( $('.nav-tabs .active').text() == "NEARME" ) {
                         socket.emit('nearme', msg);
-                        $("#showMessagesNearme").append('<div id="message" align="right"><div id="message" class="bubble">'+$('#msg').val()+'</div>'+username+'</div><br>');
+                        $("#showMessagesNearme").append('<div id="message" align="right"><div class="bubble">'+$('#msg').val()+'</div><div>'+username+'</div></div><br>');
                         objDivNearme.scrollTop = objDivNearme.scrollHeight;
                     }else{
                         socket.emit('region', msg);
-                        $("#showMessagesRegion").append('<div id="message" align="right"><div id="message" class="bubble">'+$('#msg').val()+'</div>'+username+'</div><br>');
+                        $("#showMessagesRegion").append('<div id="message" align="right"><div class="bubble">'+$('#msg').val()+'</div><div>'+username+'</div></div><br>');
                         objDivRegion.scrollTop = objDivRegion.scrollHeight;
                     }
                     
@@ -234,17 +232,19 @@
                 });
                 
                 socket.on(location, function(msg){
-                    $("#showMessagesNearme").append('<div id="message" >'+msg.username+'<div id="message" class="bubble">'+msg.message+'</div></div><br>');                   
+                    $("#showMessagesNearme").append('<div id="message" align="left"><div class="bubble bubble-reverse" >'+msg.message+'</div><div>'+msg.username+'</div></div><br>');                   
                     objDivNearme.scrollTop = objDivNearme.scrollHeight;
                 });
                 
                 socket.on(location.substring(location.indexOf(",") + 1), function(msg){
-                    $("#showMessagesRegion").append('<div id="message" >'+msg.username+'<div id="message" class="bubble">'+msg.message+'</div></div><br>');                   
+                    $("#showMessagesRegion").append('<div id="message" align="left"><div class="bubble bubble-reverse">'+msg.message+'</div><div>'+msg.username+'</div></div><br>');                   
                     objDivRegion.scrollTop = objDivRegion.scrollHeight;
                 });
+                
+                return;
             }
             
-            $("#formL").submit(function(e){
+            $("#loginForm").submit(function(e){
                 e.preventDefault();
 
                 username = "Guest-" + $('#username').val().charAt(0).toUpperCase() + $('#username').val().slice(1);
@@ -265,7 +265,7 @@
                     if (this.readyState == 4 && this.status == 200) {
                         var results = JSON.parse(this.responseText).results[0].address_components;
                         location = setAddress(results);
-                        func();
+                        setupSocketIO();
                         $( "#tab-content" ).delay( 800 ).slideDown( 400 );
                         $( "#chat-textbox" ).delay( 800 ).slideDown( 400 );
                         $( "#tabs" ).delay( 800 ).fadeIn( 400 );
@@ -276,6 +276,7 @@
                 };
                 xhttp.open("GET", "https://maps.googleapis.com/maps/api/geocode/json?address=" + parseInputLocation() + "&key=", true);
                 xhttp.send();
+                return;
             }
             
             function parseInputLocation(){

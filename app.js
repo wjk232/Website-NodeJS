@@ -17,6 +17,7 @@ var gPublicKey = key.exportKey("pkcs8-public-pem");
 var users_online = {}
 var API_KEY = process.env.API_KEY || 'none';
 var mysql = require('mysql');
+var user_sql = "id, status, username, profile_pic, favs, location, public_key";
 
 var pool  = mysql.createPool({
   host     : process.env.HOST,
@@ -135,7 +136,6 @@ app.use(function(request, response, next) {
 });
 
 app.get('/', function(req, res){
-    //res.sendFile(__dirname + '/index.html',{name : "example"});
     res.render('profile',{name : "example"});
 });
 
@@ -193,7 +193,7 @@ app.post('/api/login', function(request, response){
             response.end();
         }
         
-        connection.query('SELECT * FROM users WHERE username = ?' , [username], function(err, result) {
+        connection.query('SELECT * FROM users WHERE username = ? LIMIT 1' , [username], function(err, result) {
             if(!err){
                 if(result.length > 0){
                     if(bcrypt.compareSync(password, result[0].password)){
@@ -204,7 +204,16 @@ app.post('/api/login', function(request, response){
                             }
                         });
                         connection.release();
-                        response.json({user: result[0], token: result[0].api_token, message : "Login successfully", code : 200});
+                        var u = {
+                            id : result[0].id,
+                            status : result[0].status,
+                            username : result[0].username,
+                            profile_pic : result[0].profile_pic,
+                            favs : result[0].favs,
+                            location : result[0].location,
+                            public_key : result[0].public_key
+                        };
+                        response.json({user: u, token: result[0].api_token, message : "Login successfully", code : 200});
                         response.end(); 
                     }else{
                         connection.release();
@@ -250,7 +259,7 @@ app.post('/api/register', function(request, response){
                             if (!fs.existsSync(__dirname + "/public/download/"+ username)){
                                 fs.mkdirSync(__dirname + "/public/download/"+ username);
                             }
-                            connection.query('SELECT * FROM users WHERE username = ?' , [username], function(err, result) {
+                            connection.query('SELECT '+ user_sql +' FROM users WHERE username = ?' , [username], function(err, result) {
                                 if (!err){
                                     connection.release();
                                     response.json({user: result[0], message : "Registered successfully", code : 201});
@@ -294,7 +303,7 @@ app.route('/api/users')
                         connection.query('UPDATE users SET status = ?, profile_pic = ?, location = ? WHERE username = ?' ,
                             ["available", request.body.profile_pic, request.body.location, username], function(err, result) {
                             if(!err){
-                                connection.query('SELECT * FROM users WHERE username = ?' , [username], function(err, result) {
+                                connection.query('SELECT '+ user_sql +' FROM users WHERE username = ?' , [username], function(err, result) {
                                     if(!err){
                                         connection.release();
                                         response.json({user : result[0], message : "Profile updated successfully", code : 200});
@@ -335,7 +344,7 @@ app.route('/api/users')
                 response.end();
             }
             
-            connection.query('SELECT * FROM users WHERE username = ?' , [usernameR], function(err, result) {
+            connection.query('SELECT '+ user_sql +' FROM users WHERE username = ?' , [usernameR], function(err, result) {
                 connection.release();
                 if(!err){
                     if(result.length > 0){
@@ -362,7 +371,7 @@ app.get('/api/recentusers', function (request, response){
             response.end();
         }
         
-        connection.query('SELECT * FROM users ORDER BY id DESC LIMIT 20', function(err, result) {
+        connection.query('SELECT '+ user_sql +' FROM users ORDER BY id DESC LIMIT 20', function(err, result) {
             connection.release();
             if(!err){
                 if(result.length > 0){
