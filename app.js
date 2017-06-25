@@ -51,10 +51,9 @@ io.on('connection', function(socket){
 
     socket.on('private', function(msg, callback){
         var username = msg.username;
-        var usernameTo = msg.usernameTo;
+        var usernameTo = key.decrypt(msg.usernameTo, "utf8");
         var message = msg.message;
         var list = io.sockets.sockets;
-        
         if(users_online[usernameTo] != null){
             if(list[users_online[usernameTo]] != null){
                 socket.broadcast.to(users_online[usernameTo]).emit('message', msg);
@@ -185,6 +184,7 @@ app.post('/api/login', function(request, response){
     var password = key.decrypt(request.body.password,"utf8");
     var username = key.decrypt(request.body.username,"utf8");
     var client_id = request.body.client_id;
+    var public_key = request.body.public_key;
     
     pool.getConnection(function (err, connection){
         if(err) {
@@ -197,13 +197,14 @@ app.post('/api/login', function(request, response){
             if(!err){
                 if(result.length > 0){
                     if(bcrypt.compareSync(password, result[0].password)){
-                        connection.query('UPDATE users SET status = ?, client_id = ? WHERE username = ?' ,
-                        ["available", client_id, username], function(err, result) {
+                        connection.query('UPDATE users SET status = ?, client_id = ?, public_key = ? WHERE username = ?' ,
+                        ["available", client_id, public_key, username], function(err, result) {
                             if (!err){
                                 console.log('Updated token successfully');
                             }
                         });
                         connection.release();
+                        var code = sendNotificationToUser("update", username, "update", "update");
                         var u = {
                             id : result[0].id,
                             status : result[0].status,
@@ -303,6 +304,7 @@ app.route('/api/users')
                         connection.query('UPDATE users SET status = ?, profile_pic = ?, location = ? WHERE username = ?' ,
                             ["available", request.body.profile_pic, request.body.location, username], function(err, result) {
                             if(!err){
+                                var code = sendNotificationToUser("update", username, "update", "update");
                                 connection.query('SELECT '+ user_sql +' FROM users WHERE username = ?' , [username], function(err, result) {
                                     if(!err){
                                         connection.release();
@@ -364,6 +366,7 @@ app.route('/api/users')
     });
 
 app.get('/api/recentusers', function (request, response){
+    var username = decodeURIComponent(request.query.username);
     pool.getConnection(function (err, connection){
         if(err) {
             connection.release();
@@ -371,7 +374,7 @@ app.get('/api/recentusers', function (request, response){
             response.end();
         }
         
-        connection.query('SELECT '+ user_sql +' FROM users ORDER BY id DESC LIMIT 20', function(err, result) {
+        connection.query('SELECT '+ user_sql +' FROM users WHERE username != ? ORDER BY id DESC LIMIT 20',[username], function(err, result) {
             connection.release();
             if(!err){
                 if(result.length > 0){
@@ -429,25 +432,29 @@ app.get('/api/download', function(request, response){
     var username = decodeURIComponent(request.query.username);
     console.log("Downloading: " + " " + usernameFrom + "   " + filename);
     
-    //usernameTo = key.decrypt(value,"utf8");
     var file = __dirname + "/public/download/" + username + "/" + usernameFrom + "/" + filename;
     response.download(file, function (err) {
-         if (err) {
-              console.log(err);
-              //res.status(err.status).end();
-         }else {
-             console.log('Sent:', filename);
+        if (err) {
+            console.log(err);
+        }else {
+            fs.unlink(file, (err) => {
+                if (err) {
+                    console.log("failed to delete local image:"+err);
+                } else {
+                    console.log('successfully deleted local image');                                
+                }
+            });
+            console.log('Sent:', filename);
         }
     });
 });
 
 function checkOnMessage(msg){
     var username = msg.username;
-    var usernameTo = msg.usernameTo;
+    var usernameTo = key.decrypt(msg.usernameTo, "utf8");
     var message = msg.message;
     var type = msg.type;
-    //var username = key.decrypt(msg.username, "utf8");
-    //var usernameTo = key.decrypt(msg.usernameTo, "utf8");
+    
     pool.getConnection(function (err, connection){
         if(err) {
             connection.release();
@@ -459,7 +466,7 @@ function checkOnMessage(msg){
             connection.release();
             if (!err){
                 if(result[0].client_id != "offline"){
-                    var code = sendNotificationToUser(result[0], username, message, type);
+                    var code = sendNotificationToUser(result[0].client_id, username, message, type);
                     return code;
                 }else{
                     return 0;
@@ -471,11 +478,17 @@ function checkOnMessage(msg){
              
         });
     });
-    
 }
 
-function sendNotificationToUser(userTo, username, message, type) {
+function sendNotificationToUser(userTo_id, username, message, type) {
     var code = 200;
+    var to;
+    
+    if(type == "message"){
+        to = userTo_id;
+    }else{
+        to = "/topics/update"
+    }
     request({
         url: 'https://fcm.googleapis.com/fcm/send',
         method: 'POST',
@@ -486,12 +499,10 @@ function sendNotificationToUser(userTo, username, message, type) {
         body: JSON.stringify({
             data : {
                 type : type,
-                id  : userTo.id,
                 username : username,
-                message : message,
-                usernameTo : userTo.username
+                message : message
             },
-            to : userTo.client_id
+            to : to
         })
     }, 
     function(error, response, body) {
@@ -505,4 +516,4 @@ function sendNotificationToUser(userTo, username, message, type) {
     });
     return code;
 }
-    
+  
