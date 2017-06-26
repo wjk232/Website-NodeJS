@@ -484,10 +484,10 @@ function sendNotificationToUser(userTo_id, username, message, type) {
     var code = 200;
     var to;
     
-    if(type == "message"){
-        to = userTo_id;
-    }else{
+    if(type == "update"){
         to = "/topics/update"
+    }else{
+        to = userTo_id;
     }
     request({
         url: 'https://fcm.googleapis.com/fcm/send',
