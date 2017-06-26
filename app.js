@@ -147,6 +147,15 @@ app.get('/resume', function(request, response){
     });
 });
 
+app.get('/policy', function(request, response){
+    var file = __dirname + "/public/documents/ChatoGo-PrivacyPolicy.pdf";
+    fs.readFile(file, function(err, data){
+        response.contentType("application/pdf");
+        response.send(data);
+        response.end();
+    });
+});
+
 app.get('/chatogo', function(req, res){
     res.render('index',{name : "example"});
 });
