@@ -156,10 +156,6 @@ app.get('/policy', function(request, response){
     });
 });
 
-app.get('/chatogo', function(req, res){
-    res.render('index',{name : "example"});
-});
-
 app.get('/api/publickey', function(req, response){
     response.json({publicKey : gPublicKey, code : 200});
     response.end();
